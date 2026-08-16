@@ -1,0 +1,55 @@
+# RAG Configuration
+
+sources:
+  primary:
+    - name: "PlantVillage"
+      type: "knowledge_base"
+    - name: "USDA Plant Health"
+      type: "official_guidance"
+  secondary:
+    - name: "PubMed Central"
+      type: "research_papers"
+
+retrieval:
+  top_k: 5
+  similarity_threshold: 0.7
+
+prompts:
+  disease_reasoning: |
+    Crop: {crop}
+    Model detected: {disease} (confidence: {confidence}%)
+
+    Retrieved information:
+    {docs}
+
+    Provide:
+    1. Is model detection likely correct?
+    2. Alternative diseases to consider
+    3. Key differences to look for
+    4. Recommended action
+
+  # Used when the trained crop/disease classifiers don't cover the plant in
+  # the photo (outside Tomato/Potato/Pepper). A vision-capable LLM identifies
+  # the plant first; the result is then grounded the same way as a normal
+  # RAG lookup (vector store + PubMed) before a second LLM call reasons over it.
+  unknown_plant_identification: |
+    You are a plant pathologist. Identify the plant species and any visible
+    disease from this photo of a leaf or plant. Respond with ONLY a JSON
+    object, no other text, in exactly this shape:
+    {"plant": "<common species name>", "is_healthy": <true or false>, "disease": "<disease name, or \"none\" if healthy>", "confidence": <your own confidence, 0 to 1>}
+
+  unknown_plant_reasoning: |
+    Plant: {plant}
+    Vision-model diagnosis: {disease}{healthy_note}
+
+    Retrieved information (may be sparse or off-target for this plant --
+    the knowledge base is built around Tomato/Potato/Pepper, so treat it as
+    supporting context, not ground truth):
+    {docs}
+
+    Provide:
+    1. A plain-language description of the disease (or confirmation of health)
+    2. Key symptoms to confirm this diagnosis
+    3. Recommended treatment
+    4. Prevention tips
+    5. Explicitly note if the retrieved information doesn't cover this plant/disease well, and say you're relying on general expertise in that case

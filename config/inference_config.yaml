@@ -1,0 +1,22 @@
+# Project Configuration
+
+rag:
+  enabled: true
+  confidence_threshold: 0.75
+  rag_trigger_threshold: 0.70
+  vector_db:
+    provider: "chromadb"
+    collection_name: "plant_diseases"
+    persist_directory: "./deployment/rag/vector_store"
+  llm:
+    provider: "openrouter"
+    model: "anthropic/claude-3.5-sonnet"
+    api_key_env: "OPENROUTER_API_KEY"
+  embeddings:
+    model_name: "sentence-transformers/all-MiniLM-L6-v2"
+
+model:
+  crop_classifier: "vit_base_patch16_224"
+  disease_classifier: "efficientnet_b0"
+  img_size: 224
+  batch_size: 32

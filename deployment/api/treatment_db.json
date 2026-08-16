@@ -1,0 +1,322 @@
+{
+  "Pepper__bell___Bacterial_spot": {
+    "crop": "Pepper (Bell)",
+    "disease": "Bacterial Spot",
+    "pathogen_type": "bacteria",
+    "pathogen": "Xanthomonas campestris pv. vesicatoria",
+    "symptoms": [
+      "Small, water-soaked circular spots on leaves that turn dark brown/black",
+      "Spots may have a yellow halo",
+      "Raised, scab-like lesions on fruit",
+      "Severe infections cause leaf drop"
+    ],
+    "treatment": [
+      "Apply copper-based bactericides at first sign of disease",
+      "Remove and destroy infected plant debris",
+      "Avoid working in fields when foliage is wet"
+    ],
+    "prevention": [
+      "Use certified disease-free seed/transplants",
+      "Rotate crops (2-3 years away from peppers/tomatoes)",
+      "Avoid overhead irrigation; use drip irrigation",
+      "Space plants for good air circulation"
+    ],
+    "severity": "moderate_to_high"
+  },
+  "Pepper__bell___healthy": {
+    "crop": "Pepper (Bell)",
+    "disease": "Healthy",
+    "pathogen_type": "none",
+    "pathogen": null,
+    "symptoms": ["No visible disease symptoms"],
+    "treatment": ["No treatment needed"],
+    "prevention": [
+      "Maintain regular monitoring",
+      "Follow standard fertilization and irrigation schedule"
+    ],
+    "severity": "none"
+  },
+  "Potato___Early_blight": {
+    "crop": "Potato",
+    "disease": "Early Blight",
+    "pathogen_type": "fungus",
+    "pathogen": "Alternaria solani",
+    "symptoms": [
+      "Dark brown spots with concentric rings (target-board pattern) on older leaves",
+      "Yellowing tissue around spots",
+      "Lesions can also appear on stems and tubers"
+    ],
+    "treatment": [
+      "Apply fungicides containing chlorothalonil or copper compounds",
+      "Remove severely infected leaves",
+      "Ensure adequate plant nutrition, especially nitrogen"
+    ],
+    "prevention": [
+      "Rotate crops with non-solanaceous plants (3-4 years)",
+      "Avoid overhead watering late in the day",
+      "Use certified seed potatoes",
+      "Maintain proper plant spacing for airflow"
+    ],
+    "severity": "moderate"
+  },
+  "Potato___Late_blight": {
+    "crop": "Potato",
+    "disease": "Late Blight",
+    "pathogen_type": "oomycete",
+    "pathogen": "Phytophthora infestans",
+    "symptoms": [
+      "Water-soaked pale-to-dark green lesions on leaves, often starting at leaf edges",
+      "White fungal growth on leaf undersides in humid conditions",
+      "Rapid tissue collapse and blackening",
+      "Can spread and destroy a field within days in cool, wet weather"
+    ],
+    "treatment": [
+      "Apply fungicides immediately (e.g., chlorothalonil, copper, or systemic oomycete-specific products)",
+      "Remove and destroy infected plants promptly",
+      "Avoid irrigation until controlled"
+    ],
+    "prevention": [
+      "Plant resistant varieties where available",
+      "Ensure good drainage and airflow",
+      "Destroy volunteer potatoes and cull piles",
+      "Monitor closely during cool, wet weather (this disease spreads fast)"
+    ],
+    "severity": "high"
+  },
+  "Potato___healthy": {
+    "crop": "Potato",
+    "disease": "Healthy",
+    "pathogen_type": "none",
+    "pathogen": null,
+    "symptoms": ["No visible disease symptoms"],
+    "treatment": ["No treatment needed"],
+    "prevention": [
+      "Maintain regular monitoring",
+      "Follow standard fertilization and irrigation schedule"
+    ],
+    "severity": "none"
+  },
+  "Tomato_Bacterial_spot": {
+    "crop": "Tomato",
+    "disease": "Bacterial Spot",
+    "pathogen_type": "bacteria",
+    "pathogen": "Xanthomonas spp.",
+    "symptoms": [
+      "Small, dark, greasy-looking spots on leaves and fruit",
+      "Spots may merge, causing leaf yellowing and drop",
+      "Raised scabby lesions on fruit"
+    ],
+    "treatment": [
+      "Apply copper-based bactericides (often combined with mancozeb)",
+      "Remove and destroy infected foliage",
+      "Avoid overhead irrigation and working with wet plants"
+    ],
+    "prevention": [
+      "Use disease-free seed/transplants",
+      "Rotate crops away from tomatoes/peppers",
+      "Improve air circulation via spacing and pruning"
+    ],
+    "severity": "moderate_to_high"
+  },
+  "Tomato_Early_blight": {
+    "crop": "Tomato",
+    "disease": "Early Blight",
+    "pathogen_type": "fungus",
+    "pathogen": "Alternaria solani",
+    "symptoms": [
+      "Dark spots with concentric rings (target pattern) on lower/older leaves first",
+      "Yellowing around lesions",
+      "Can progress to stem and fruit lesions"
+    ],
+    "treatment": [
+      "Apply fungicides (chlorothalonil, copper, or mancozeb)",
+      "Remove infected lower leaves",
+      "Mulch to reduce soil splash onto foliage"
+    ],
+    "prevention": [
+      "Rotate crops (avoid solanaceous crops for 2-3 years)",
+      "Stake/cage plants for airflow",
+      "Water at the base, not overhead",
+      "Maintain good plant nutrition"
+    ],
+    "severity": "moderate"
+  },
+  "Tomato_healthy": {
+    "crop": "Tomato",
+    "disease": "Healthy",
+    "pathogen_type": "none",
+    "pathogen": null,
+    "symptoms": ["No visible disease symptoms"],
+    "treatment": ["No treatment needed"],
+    "prevention": [
+      "Maintain regular monitoring",
+      "Follow standard fertilization and irrigation schedule"
+    ],
+    "severity": "none"
+  },
+  "Tomato_Late_blight": {
+    "crop": "Tomato",
+    "disease": "Late Blight",
+    "pathogen_type": "oomycete",
+    "pathogen": "Phytophthora infestans",
+    "symptoms": [
+      "Large, irregular water-soaked green-black lesions on leaves",
+      "White fuzzy growth on leaf undersides in humid conditions",
+      "Firm, brown, greasy-looking lesions on fruit",
+      "Rapid whole-plant collapse possible"
+    ],
+    "treatment": [
+      "Apply fungicides immediately at first sign (chlorothalonil, copper, or oomycete-specific systemics)",
+      "Remove and destroy infected plants; do not compost",
+      "Stop overhead irrigation"
+    ],
+    "prevention": [
+      "Plant resistant varieties where available",
+      "Avoid working with wet foliage",
+      "Space and stake plants for airflow",
+      "Monitor closely in cool, wet weather — spreads fast and can be devastating"
+    ],
+    "severity": "high"
+  },
+  "Tomato_Leaf_Mold": {
+    "crop": "Tomato",
+    "disease": "Leaf Mold",
+    "pathogen_type": "fungus",
+    "pathogen": "Passalora fulva (syn. Fulvia fulva)",
+    "symptoms": [
+      "Pale green/yellow spots on upper leaf surface",
+      "Olive-green to grayish-purple velvety fungal growth on the underside",
+      "Common in humid, poorly ventilated environments (especially greenhouses)"
+    ],
+    "treatment": [
+      "Apply fungicides labeled for leaf mold",
+      "Remove infected leaves",
+      "Increase ventilation and reduce humidity"
+    ],
+    "prevention": [
+      "Use resistant varieties",
+      "Improve greenhouse/field ventilation",
+      "Avoid overhead watering and leaf wetness",
+      "Space plants adequately"
+    ],
+    "severity": "moderate"
+  },
+  "Tomato_Septoria_leaf_spot": {
+    "crop": "Tomato",
+    "disease": "Septoria Leaf Spot",
+    "pathogen_type": "fungus",
+    "pathogen": "Septoria lycopersici",
+    "symptoms": [
+      "Small, circular spots with dark margins and tan/gray centers",
+      "Tiny black fruiting bodies (pycnidia) visible in spot centers",
+      "Starts on lower leaves, progresses upward",
+      "Severe infection causes significant leaf drop"
+    ],
+    "treatment": [
+      "Apply fungicides (chlorothalonil or copper-based)",
+      "Remove infected lower leaves promptly",
+      "Mulch to reduce soil splash"
+    ],
+    "prevention": [
+      "Rotate crops away from tomatoes for 1-2 years",
+      "Avoid overhead irrigation",
+      "Stake/prune for airflow",
+      "Clean up plant debris at season end"
+    ],
+    "severity": "moderate"
+  },
+  "Tomato_Spider_mites_Two_spotted_spider_mite": {
+    "crop": "Tomato",
+    "disease": "Two-Spotted Spider Mite infestation",
+    "pathogen_type": "pest (arachnid)",
+    "pathogen": "Tetranychus urticae",
+    "symptoms": [
+      "Fine yellow/white stippling on leaves",
+      "Fine webbing on leaf undersides and between leaves in heavy infestations",
+      "Leaves may bronze, dry out, and drop",
+      "Thrives in hot, dry conditions"
+    ],
+    "treatment": [
+      "Apply miticides or insecticidal soap/horticultural oil (target undersides of leaves)",
+      "Introduce predatory mites as biological control",
+      "Increase humidity and hose down plants to disrupt mites"
+    ],
+    "prevention": [
+      "Avoid drought stress; maintain consistent watering",
+      "Monitor regularly, especially in hot weather",
+      "Avoid excess nitrogen fertilization",
+      "Remove heavily infested leaves early"
+    ],
+    "severity": "moderate"
+  },
+  "Tomato__Target_Spot": {
+    "crop": "Tomato",
+    "disease": "Target Spot",
+    "pathogen_type": "fungus",
+    "pathogen": "Corynespora cassiicola",
+    "symptoms": [
+      "Brown lesions with concentric target-like rings on leaves",
+      "Can affect stems and fruit with sunken dark lesions",
+      "Favored by warm, humid conditions"
+    ],
+    "treatment": [
+      "Apply fungicides (chlorothalonil, azoxystrobin, or mancozeb)",
+      "Remove infected foliage",
+      "Improve air circulation"
+    ],
+    "prevention": [
+      "Rotate crops",
+      "Avoid overhead irrigation",
+      "Space and prune plants for airflow",
+      "Remove crop debris after harvest"
+    ],
+    "severity": "moderate"
+  },
+  "Tomato__Tomato_mosaic_virus": {
+    "crop": "Tomato",
+    "disease": "Tomato Mosaic Virus (ToMV)",
+    "pathogen_type": "virus",
+    "pathogen": "Tomato mosaic virus",
+    "symptoms": [
+      "Mottled light/dark green mosaic pattern on leaves",
+      "Leaf distortion, curling, and stunted growth",
+      "Reduced fruit yield and fruit discoloration",
+      "Spreads via contact, tools, and infected seed — not insects"
+    ],
+    "treatment": [
+      "No chemical cure — remove and destroy infected plants",
+      "Disinfect tools and hands (e.g., with a bleach/soap solution) between plants",
+      "Avoid handling tobacco products before working with plants"
+    ],
+    "prevention": [
+      "Use certified virus-free seed and resistant varieties",
+      "Practice strict sanitation (tools, hands, stakes)",
+      "Rotate crops and remove plant debris"
+    ],
+    "severity": "high"
+  },
+  "Tomato__Tomato_YellowLeaf__Curl_Virus": {
+    "crop": "Tomato",
+    "disease": "Tomato Yellow Leaf Curl Virus (TYLCV)",
+    "pathogen_type": "virus",
+    "pathogen": "Tomato yellow leaf curl virus (transmitted by whitefly, Bemisia tabaci)",
+    "symptoms": [
+      "Upward curling and yellowing of leaf margins",
+      "Stunted plant growth, bushy appearance",
+      "Flower drop and severely reduced fruit set",
+      "Spreads via whitefly vector"
+    ],
+    "treatment": [
+      "No cure — remove and destroy infected plants to reduce spread",
+      "Control whitefly populations with insecticides or insecticidal soap",
+      "Use reflective mulches to deter whiteflies"
+    ],
+    "prevention": [
+      "Use resistant/tolerant varieties where available",
+      "Use whitefly-proof screens/row covers on young plants",
+      "Control weeds that host whiteflies",
+      "Monitor and manage whitefly populations proactively"
+    ],
+    "severity": "high"
+  }
+}

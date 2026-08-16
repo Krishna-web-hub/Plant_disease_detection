@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Plant Disease Detection",
+    "slug": "plant-disease-detection",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Used to photograph plant leaves for disease detection.",
+        "NSPhotoLibraryUsageDescription": "Used to select leaf photos for disease detection."
+      }
+    },
+    "android": {
+      "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE"]
+    }
+  }
+}

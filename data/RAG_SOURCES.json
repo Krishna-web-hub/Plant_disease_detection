@@ -1,0 +1,32 @@
+{
+  "project_name": "Plant Disease Detection System",
+  "version": "1.0.0",
+  "data_sources": [
+    {
+      "id": "plantvillage_dataset",
+      "name": "PlantVillage Dataset",
+      "type": "image_dataset",
+      "source_path": "/home/master-krishna-kiran/Downloads/archive(1).zip",
+      "extracted_path": "data/raw/PlantVillage",
+      "coverage": "15 classes across 3 crops (Pepper, Potato, Tomato), 20639 images — subset of full 38-class/14-crop dataset",
+      "status": "extracted",
+      "note": "Full PlantVillage dataset covers 14 crops; only Pepper/Potato/Tomato present so far. Remaining crops needed for Phase 2 (12-crop target)."
+    },
+    {
+      "id": "extension_factsheets",
+      "name": "Land-grant Cooperative Extension fact sheets",
+      "type": "cached_web_documents",
+      "coverage": "12/12 disease categories, 8 institutions (Cornell, UMD, UF/IFAS, Penn State, UMaine, UDel, OSU, UC IPM)",
+      "status": "cached",
+      "note": "No official USDA plant-disease REST API exists (third-party 'USDA Plants Database API' is defunct; APHIS IPHIS is restricted to state/federal cooperators). These extension sites are the real sources USDA guidance mirrors. See deployment/rag/retrievers/usda.py and build_extension_cache.py."
+    },
+    {
+      "id": "pubmed",
+      "name": "PubMed (NCBI E-utilities)",
+      "type": "live_api",
+      "coverage": "Research papers on plant pathology, queried live per RAG request",
+      "status": "connected",
+      "note": "Public API, no key required. See deployment/rag/retrievers/scholar.py."
+    }
+  ]
+}

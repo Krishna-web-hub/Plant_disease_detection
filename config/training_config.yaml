@@ -1,0 +1,21 @@
+# Training configuration — run on the GPU (4090) machine.
+seed: 42
+img_size: 224
+batch_size: 32
+num_workers: 4
+epochs: 25
+lr: 0.0003
+weight_decay: 0.05
+early_stopping_patience: 5
+
+crop_classifier:
+  model_name: vit_base_patch16_224
+  manifest: data/processed/manifest.csv
+  class_weights: data/processed/class_weights_crop.json
+  output_dir: models/crop_classifier
+
+disease_classifier:
+  model_name: efficientnet_b0
+  manifest: data/processed/manifest.csv
+  class_weights_dir: data/processed/class_weights_disease
+  output_dir: models/disease_classifier
