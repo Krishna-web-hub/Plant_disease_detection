@@ -64,8 +64,26 @@ class PlantDiseaseRAG:
         results = self.collection.query(query_texts=[query], n_results=top_k or self.top_k)
         docs = []
         for doc, meta, dist in zip(results["documents"][0], results["metadatas"][0], results["distances"][0]):
-            docs.append({"text": doc, "source": meta.get("source", "unknown"), "distance": dist})
+            docs.append({"text": doc, "source": meta.get("source", "unknown"), "url": meta.get("url"), "distance": dist})
         return docs
+
+    @staticmethod
+    def _collect_sources(docs):
+        """De-duped, clickable citation list. Docs without a URL (e.g. the
+        internal treatment DB) still surface a plain source name -- but
+        PubMed and extension fact sheets get a link the user can verify
+        themselves, unlike a black-box "trust us" answer.
+        """
+        seen = set()
+        sources = []
+        for d in docs:
+            url = d.get("url") or d.get("metadata", {}).get("url")
+            key = url or d["source"]
+            if key in seen:
+                continue
+            seen.add(key)
+            sources.append({"source": d["source"], "url": url})
+        return sorted(sources, key=lambda s: (s["source"], s["url"] or ""))
 
     def query(self, crop, disease, confidence):
         start = time.time()
@@ -88,7 +106,7 @@ class PlantDiseaseRAG:
         return {
             "primary": disease,
             "reasoning": reasoning,
-            "sources": sorted({d["source"] for d in docs}),
+            "sources": self._collect_sources(docs),
             "latency_seconds": round(time.time() - start, 2),
         }
 
@@ -159,6 +177,6 @@ class PlantDiseaseRAG:
             "is_healthy": is_healthy,
             "vision_confidence": vision_confidence,
             "reasoning": reasoning,
-            "sources": sorted({d["source"] for d in docs}),
+            "sources": self._collect_sources(docs),
             "latency_seconds": round(time.time() - start, 2),
         }

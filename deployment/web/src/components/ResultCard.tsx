@@ -1,12 +1,47 @@
-import type { PredictResponse, Treatment } from "../types";
+import type { PredictResponse, Severity, SourceRef, Treatment } from "../types";
 
 function Pct({ value }: { value: number }) {
   return <span className="confidence">{Math.round(value * 100)}%</span>;
 }
 
+const SEVERITY_LABELS: Record<Severity, string> = {
+  none: "Healthy",
+  moderate: "Moderate severity",
+  moderate_to_high: "Moderate–high severity",
+  high: "High severity",
+};
+
+function SeverityBadge({ severity }: { severity: Severity }) {
+  return <span className={`severity severity-${severity}`}>{SEVERITY_LABELS[severity]}</span>;
+}
+
+function SourceList({ sources }: { sources: SourceRef[] }) {
+  if (sources.length === 0) return null;
+  return (
+    <div className="section">
+      <h3>Sources</h3>
+      <p className="hint">Verify these yourself — we don't ask you to just trust us.</p>
+      <ul>
+        {sources.map((s) => (
+          <li key={s.url ?? s.source}>
+            {s.url ? (
+              <a href={s.url} target="_blank" rel="noopener noreferrer">
+                {s.source} ↗
+              </a>
+            ) : (
+              <>{s.source} ✓</>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function TreatmentBlock({ treatment }: { treatment: Treatment }) {
   return (
     <div className="section">
+      <SeverityBadge severity={treatment.severity} />
       <h3>Treatment</h3>
       <ul>
         {treatment.treatment.map((step, i) => (
@@ -50,14 +85,7 @@ export function ResultCard({ result }: { result: PredictResponse }) {
           <p>{result.rag_reasoning}</p>
         </div>
         <TreatmentBlock treatment={result.treatment} />
-        <div className="section">
-          <h3>Sources</h3>
-          <ul>
-            {result.rag_sources.map((source) => (
-              <li key={source}>{source} ✓</li>
-            ))}
-          </ul>
-        </div>
+        <SourceList sources={result.rag_sources} />
       </div>
     );
   }
@@ -90,16 +118,7 @@ export function ResultCard({ result }: { result: PredictResponse }) {
           <h3>Analysis</h3>
           <p>{result.reasoning}</p>
         </div>
-        {result.sources.length > 0 && (
-          <div className="section">
-            <h3>Sources</h3>
-            <ul>
-              {result.sources.map((source) => (
-                <li key={source}>{source} ✓</li>
-              ))}
-            </ul>
-          </div>
-        )}
+        <SourceList sources={result.sources} />
       </div>
     );
   }

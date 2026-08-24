@@ -2,6 +2,13 @@
 
 export type Severity = "none" | "moderate" | "moderate_to_high" | "high";
 
+// A citation the user can click through and verify -- url is null for
+// sources that aren't individually linkable (e.g. the internal treatment DB).
+export interface SourceRef {
+  source: string;
+  url: string | null;
+}
+
 export interface Treatment {
   crop: string;
   disease: string;
@@ -30,7 +37,7 @@ export interface RagEnhancedResult {
   model_confidence: number;
   treatment: Treatment;
   rag_reasoning: string;
-  rag_sources: string[];
+  rag_sources: SourceRef[];
   rag_latency_seconds: number;
   rag_used: true;
 }
@@ -62,7 +69,7 @@ export interface AiFallbackResult {
   is_healthy: boolean;
   vision_confidence: number | null;
   reasoning: string;
-  sources: string[];
+  sources: SourceRef[];
   rag_latency_seconds: number;
   message: string;
 }

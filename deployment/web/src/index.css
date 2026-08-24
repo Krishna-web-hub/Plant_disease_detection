@@ -120,3 +120,47 @@ h1 {
   border-radius: 999px;
   margin-bottom: 8px;
 }
+
+.severity {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+}
+
+.severity-none {
+  color: #1b5e20;
+  background: #e3f6e5;
+}
+
+.severity-moderate {
+  color: #8a5300;
+  background: #fff3d6;
+}
+
+.severity-moderate_to_high {
+  color: #9a4700;
+  background: #ffe6cc;
+}
+
+.severity-high {
+  color: #b71c1c;
+  background: #fde0e0;
+}
+
+.hint {
+  font-size: 12px;
+  color: #777;
+  margin-top: -2px;
+}
+
+.card a {
+  color: #2e7d32;
+  text-decoration: none;
+}
+
+.card a:hover {
+  text-decoration: underline;
+}

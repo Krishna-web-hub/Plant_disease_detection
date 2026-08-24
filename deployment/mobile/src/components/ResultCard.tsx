@@ -1,14 +1,56 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import type { PredictResponse, Treatment } from "../types";
+import { Linking, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import type { PredictResponse, Severity, SourceRef, Treatment } from "../types";
 
 function Pct({ value }: { value: number }) {
   return <Text style={styles.confidence}>{Math.round(value * 100)}%</Text>;
 }
 
+const SEVERITY_LABELS: Record<Severity, string> = {
+  none: "Healthy",
+  moderate: "Moderate severity",
+  moderate_to_high: "Moderate–high severity",
+  high: "High severity",
+};
+
+const SEVERITY_COLORS: Record<Severity, { color: string; backgroundColor: string }> = {
+  none: { color: "#1b5e20", backgroundColor: "#e3f6e5" },
+  moderate: { color: "#8a5300", backgroundColor: "#fff3d6" },
+  moderate_to_high: { color: "#9a4700", backgroundColor: "#ffe6cc" },
+  high: { color: "#b71c1c", backgroundColor: "#fde0e0" },
+};
+
+function SeverityBadge({ severity }: { severity: Severity }) {
+  return (
+    <Text style={[styles.severity, SEVERITY_COLORS[severity]]}>{SEVERITY_LABELS[severity]}</Text>
+  );
+}
+
+function SourceList({ sources }: { sources: SourceRef[] }) {
+  if (sources.length === 0) return null;
+  return (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>Sources</Text>
+      <Text style={styles.hint}>Verify these yourself — we don't ask you to just trust us.</Text>
+      {sources.map((s) =>
+        s.url ? (
+          <TouchableOpacity key={s.url} onPress={() => Linking.openURL(s.url!)}>
+            <Text style={styles.link}>• {s.source} ↗</Text>
+          </TouchableOpacity>
+        ) : (
+          <Text key={s.source} style={styles.bullet}>
+            • {s.source} ✓
+          </Text>
+        )
+      )}
+    </View>
+  );
+}
+
 function TreatmentBlock({ treatment }: { treatment: Treatment }) {
   return (
     <View style={styles.section}>
+      <SeverityBadge severity={treatment.severity} />
       <Text style={styles.sectionTitle}>Treatment</Text>
       {treatment.treatment.map((step, i) => (
         <Text key={i} style={styles.bullet}>
@@ -52,14 +94,7 @@ export function ResultCard({ result }: { result: PredictResponse }) {
           <Text style={styles.body}>{result.rag_reasoning}</Text>
         </View>
         <TreatmentBlock treatment={result.treatment} />
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Sources</Text>
-          {result.rag_sources.map((source) => (
-            <Text key={source} style={styles.bullet}>
-              • {source} ✓
-            </Text>
-          ))}
-        </View>
+        <SourceList sources={result.rag_sources} />
       </View>
     );
   }
@@ -92,16 +127,7 @@ export function ResultCard({ result }: { result: PredictResponse }) {
           <Text style={styles.sectionTitle}>Analysis</Text>
           <Text style={styles.body}>{result.reasoning}</Text>
         </View>
-        {result.sources.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Sources</Text>
-            {result.sources.map((source) => (
-              <Text key={source} style={styles.bullet}>
-                • {source} ✓
-              </Text>
-            ))}
-          </View>
-        )}
+        <SourceList sources={result.sources} />
       </View>
     );
   }
@@ -125,6 +151,8 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 14, fontWeight: "700", marginBottom: 2 },
   bullet: { fontSize: 14, color: "#333" },
   body: { fontSize: 14, color: "#333" },
+  hint: { fontSize: 12, color: "#777", marginBottom: 2 },
+  link: { fontSize: 14, color: "#2e7d32", textDecorationLine: "underline" },
   badge: {
     alignSelf: "flex-start",
     fontSize: 11,
@@ -133,6 +161,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff3d6",
     paddingVertical: 3,
     paddingHorizontal: 8,
+    borderRadius: 999,
+    marginBottom: 4,
+    overflow: "hidden",
+  },
+  severity: {
+    alignSelf: "flex-start",
+    fontSize: 12,
+    fontWeight: "600",
+    paddingVertical: 2,
+    paddingHorizontal: 9,
     borderRadius: 999,
     marginBottom: 4,
     overflow: "hidden",

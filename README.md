@@ -8,6 +8,23 @@ literature retrieval — so the product isn't hard-capped at three crops, and
 unlike a plain "ask an AI" tool, every answer (trained-model or LLM-fallback)
 is checked against real sources rather than taken on faith.
 
+## Positioning vs. commercial plant-ID apps (e.g. MyPlantIn)
+
+Those apps show a confident-sounding diagnosis with a vague "expert tips"
+blurb and no way to check it, behind a subscription paywall. This project
+makes different tradeoffs on purpose:
+
+| | Typical plant-ID app | This project |
+|---|---|---|
+| Confidence | Not shown | Shown on every prediction, including an honest "uncertain" response when it's genuinely unsure |
+| Treatment advice | Generic text, no citations | Grounded in PubMed abstracts + land-grant extension fact sheets, with clickable source links |
+| Coverage limits | Rarely stated | Explicit: trained crops (Tomato/Potato/Pepper) vs. AI-vision fallback for everything else, and the UI tells you which one you're looking at |
+| Cost | Subscription | None — self-hosted, only external cost is optional LLM API usage |
+
+Not a target: 24,000-species plant *identification*, care reminders, or
+human botanist chat — this stays scoped to disease diagnosis, where the
+grounding/transparency edge above actually matters.
+
 ## Pipeline
 
 ```
@@ -143,7 +160,13 @@ presented to users as a second opinion, not a verified diagnosis.
 
 ## Response types (`/predict`)
 
-Every response has a `type` field the clients switch on. Five shapes:
+Every response has a `type` field the clients switch on. Five shapes.
+Wherever sources appear (`rag_sources`, `sources`), each entry is
+`{"source": "...", "url": "..." | null}` — `url` is set for anything
+individually citable (PubMed abstracts, extension fact sheets) so the web
+and mobile clients render them as clickable links, not just a name to trust.
+`treatment.severity` (`none`/`moderate`/`moderate_to_high`/`high`) is
+rendered as a badge on every response carrying a `treatment` object.
 
 **`DIRECT`** — trained model is confident (`confidence >= confidence_threshold`).
 ```json
@@ -169,7 +192,10 @@ treatment is grounded with retrieved sources plus an LLM's second opinion.
   "model_confidence": 0.71,
   "treatment": { "...": "..." },
   "rag_reasoning": "The model's detection is plausible given...",
-  "rag_sources": ["PlantVillage", "PubMed"],
+  "rag_sources": [
+    { "source": "PlantVillage", "url": null },
+    { "source": "PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/12345678/" }
+  ],
   "rag_latency_seconds": 2.3,
   "rag_used": true
 }
@@ -202,7 +228,7 @@ same way as `RAG_ENHANCED`.
   "is_healthy": false,
   "vision_confidence": 0.8,
   "reasoning": "Based on the retrieved information and the visible symptoms...",
-  "sources": ["PubMed"],
+  "sources": [{ "source": "PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/23456789/" }],
   "rag_latency_seconds": 3.1,
   "message": "Outside our trained crops (Tomato/Potato/Pepper) — diagnosed by an AI vision model..."
 }
