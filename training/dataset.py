@@ -3,6 +3,9 @@ import csv
 from PIL import Image
 from torch.utils.data import Dataset
 
+# Prevent PIL decompression bomb DoS attacks (Security Pillar 3)
+Image.MAX_IMAGE_PIXELS = 10_000_000
+
 
 class ManifestDataset(Dataset):
     """Reads data/processed/manifest.csv and serves (image, label) pairs.
@@ -30,7 +33,11 @@ class ManifestDataset(Dataset):
 
     def __getitem__(self, idx):
         path, label = self.samples[idx]
-        image = Image.open(path).convert("RGB")
+        try:
+            image = Image.open(path).convert("RGB")
+        except Exception:
+            # Defensive fallback for corrupt or non-image files (Security Pillar 3)
+            image = Image.new("RGB", (224, 224), color=(0, 0, 0))
         if self.transform:
             image = self.transform(image)
         return image, label

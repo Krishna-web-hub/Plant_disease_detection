@@ -7,14 +7,19 @@ import torch
 import yaml
 from PIL import Image
 
+# Prevent PIL decompression bomb DoS
+Image.MAX_IMAGE_PIXELS = 10_000_000
+
 from training.utils import build_transforms
+
 
 _CONFIG_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "config", "training_config.yaml")
 
 
 class ModelBundle:
     def __init__(self, config_path=_CONFIG_PATH):
-        self.cfg = yaml.safe_load(open(config_path))
+        with open(config_path, "r", encoding="utf-8") as f:
+            self.cfg = yaml.safe_load(f)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         _, self.eval_tf = build_transforms(self.cfg["img_size"])
 
@@ -38,10 +43,11 @@ class ModelBundle:
         idx_to_class = {v: k for k, v in class_to_idx.items()}
 
         model = timm.create_model(model_name, pretrained=False, num_classes=len(class_to_idx))
-        state = torch.load(os.path.join(output_dir, "best.pt"), map_location=self.device)
+        state = torch.load(os.path.join(output_dir, "best.pt"), map_location=self.device, weights_only=True)
         model.load_state_dict(state)
         model.to(self.device).eval()
         return model, idx_to_class
+
 
     @torch.no_grad()
     def _predict(self, model, idx_to_class, image: Image.Image):
@@ -51,6 +57,21 @@ class ModelBundle:
         idx = int(probs.argmax())
         return idx_to_class[idx], float(probs[idx])
 
+    @torch.no_grad()
+    def get_crop_logits(self, image: Image.Image):
+        tensor = self.eval_tf(image).unsqueeze(0).to(self.device)
+        logits = self.crop_model(tensor)[0]
+        return logits.detach(), self.crop_classes
+
+    @torch.no_grad()
+    def get_disease_logits(self, crop: str, image: Image.Image):
+        if crop not in self.disease_models:
+            raise KeyError(f"No trained disease classifier for crop '{crop}'")
+        model, classes = self.disease_models[crop]
+        tensor = self.eval_tf(image).unsqueeze(0).to(self.device)
+        logits = model(tensor)[0]
+        return logits.detach(), classes
+
     def predict_crop(self, image: Image.Image):
         return self._predict(self.crop_model, self.crop_classes, image)
 
@@ -59,3 +80,4 @@ class ModelBundle:
             raise KeyError(f"No trained disease classifier for crop '{crop}'")
         model, classes = self.disease_models[crop]
         return self._predict(model, classes, image)
+

@@ -1,0 +1,17 @@
+{
+  "dataset_source": "https://github.com/spMohanty/PlantVillage-Dataset/tree/master/raw",
+  "data_directory": "data/raw/PlantVillage",
+  "total_scanned": 52156,
+  "valid_images": 52156,
+  "corrupt_files_skipped": 0,
+  "exact_md5_duplicates_grouped": 21,
+  "physical_leaf_series_grouped": 53,
+  "perceptual_dhash_merges": 163,
+  "splits": {
+    "train": 36493,
+    "val": 7807,
+    "test": 7856
+  },
+  "cross_split_md5_leakage": 0,
+  "cross_split_leaf_series_leakage": 0
+}

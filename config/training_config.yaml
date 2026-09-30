@@ -12,6 +12,14 @@ epochs: 25
 lr: 0.0003
 weight_decay: 0.05
 early_stopping_patience: 5
+early_stopping_metric: "val_loss"   # Stop on val_loss to avoid overconfident misclassifications
+
+# Regularization & Anti-Overfitting
+label_smoothing: 0.1                # Calibrates probabilities and flattens overconfident logits
+drop_rate: 0.2                      # Dropout rate for classifier heads
+drop_path_rate: 0.15                # Stochastic depth rate for EfficientNet
+strong_aug: true                    # TrivialAugmentWide + RandomErasing to break background bias
+freeze_epochs: 2                    # Warm up classification head before fine-tuning full backbone
 
 # GPU & Hardware Acceleration (RTX 3060 / Ampere)
 device: "cuda"              # Use "cuda" or "cuda:0" (auto falls back to "cpu" if unavailable)
@@ -25,6 +33,7 @@ crop_classifier:
   manifest: data/processed/manifest.csv
   class_weights: data/processed/class_weights_crop.json
   output_dir: models/crop_classifier
+
 
 disease_classifier:
   model_name: efficientnet_b0

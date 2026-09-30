@@ -72,15 +72,33 @@ def clear_gpu_memory():
         torch.cuda.reset_peak_memory_stats()
 
 
-def build_transforms(img_size):
-    train_tf = transforms.Compose([
-        transforms.RandomResizedCrop(img_size, scale=(0.8, 1.0)),
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomRotation(15),
-        transforms.ColorJitter(0.2, 0.2, 0.2),
-        transforms.ToTensor(),
-        transforms.Normalize(IMAGENET_MEAN, IMAGENET_STD),
-    ])
+def build_transforms(img_size, strong_aug=True):
+    """Builds training and evaluation transforms.
+
+    When strong_aug=True, applies TrivialAugmentWide, vertical flip, and
+    RandomErasing to prevent model overfitting, background memorization,
+    and shortcut learning.
+    """
+    if strong_aug:
+        train_tf = transforms.Compose([
+            transforms.RandomResizedCrop(img_size, scale=(0.7, 1.0)),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomVerticalFlip(),
+            transforms.TrivialAugmentWide(),
+            transforms.ToTensor(),
+            transforms.Normalize(IMAGENET_MEAN, IMAGENET_STD),
+            transforms.RandomErasing(p=0.25, scale=(0.02, 0.2), value="random"),
+        ])
+    else:
+        train_tf = transforms.Compose([
+            transforms.RandomResizedCrop(img_size, scale=(0.8, 1.0)),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomRotation(15),
+            transforms.ColorJitter(0.2, 0.2, 0.2),
+            transforms.ToTensor(),
+            transforms.Normalize(IMAGENET_MEAN, IMAGENET_STD),
+        ])
+
     eval_tf = transforms.Compose([
         transforms.Resize(int(img_size * 1.14)),
         transforms.CenterCrop(img_size),
@@ -91,23 +109,39 @@ def build_transforms(img_size):
 
 
 class EarlyStopping:
-    def __init__(self, patience=5, mode="max"):
+    """Early stops training when monitored metric stops improving.
+
+    Default mode='min' tracks validation loss to avoid saving models whose
+    cross-entropy is diverging due to overconfident misclassifications.
+    """
+    def __init__(self, patience=5, mode="min", min_delta=1e-4):
         self.patience = patience
         self.mode = mode
+        self.min_delta = min_delta
         self.best = None
         self.counter = 0
+        self.best_epoch = 0
         self.should_stop = False
 
-    def step(self, value):
-        improved = self.best is None or (
-            value > self.best if self.mode == "max" else value < self.best
-        )
+    def step(self, value, epoch=0):
+        if self.best is None:
+            self.best = value
+            self.best_epoch = epoch
+            return True
+
+        if self.mode == "min":
+            improved = value < (self.best - self.min_delta)
+        else:
+            improved = value > (self.best + self.min_delta)
+
         if improved:
             self.best = value
+            self.best_epoch = epoch
             self.counter = 0
         else:
             self.counter += 1
             if self.counter >= self.patience:
                 self.should_stop = True
         return improved
+
 

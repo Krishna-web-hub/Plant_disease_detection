@@ -118,11 +118,23 @@ per-crop weights under `class_weights_disease/`.
 
 ## 2. Train
 
+### Option A: Free Cloud GPU Training (Kaggle & Colab — Recommended)
+- **Kaggle GPU Notebook:** [`notebooks/Plant_Disease_Detection_Kaggle_Training.ipynb`](notebooks/Plant_Disease_Detection_Kaggle_Training.ipynb)
+  - Open a new notebook on Kaggle, upload this `.ipynb` file, set **Accelerator -> GPU T4 x2**, and run all cells.
+  - Automatically ingests all 14 crops (38 classes), runs the leak-proof data prep, trains Stage 1 (Crop Classifier) and Stage 2 (Disease Classifiers), and bundles the checkpoints into `/kaggle/working/plant_disease_models.zip` for 1-click download.
+- **Google Colab Notebook:** [`notebooks/Plant_Disease_Detection_Colab_Training.ipynb`](notebooks/Plant_Disease_Detection_Colab_Training.ipynb)
+
+### Option B: Local Training (RTX 3060 / Linux)
 ```bash
+# 1. Train Crop Classifier
 python training/train_crop_classifier.py
+
+# 2. Train Disease Classifiers per crop
 python training/train_disease_classifier.py --crop Tomato
 python training/train_disease_classifier.py --crop Potato
 python training/train_disease_classifier.py --crop Pepper
+# Or train all available crops automatically:
+python training/train_all.py
 ```
 
 Config lives in `config/training_config.yaml` (image size, batch size, LR,

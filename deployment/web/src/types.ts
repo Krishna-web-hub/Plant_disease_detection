@@ -2,22 +2,70 @@
 
 export type Severity = "none" | "moderate" | "moderate_to_high" | "high";
 
-// A citation the user can click through and verify -- url is null for
-// sources that aren't individually linkable (e.g. the internal treatment DB).
 export interface SourceRef {
   source: string;
   url: string | null;
 }
 
-export interface Treatment {
+export interface AgentAuditStep {
+  agent: string;
+  status: string;
+  verdict: string;
+  original_hypothesis?: string;
+  revised_hypothesis?: string;
+  metrics?: {
+    free_energy?: number;
+    max_logit?: number;
+    raw_confidence?: number;
+    calibrated_confidence?: number;
+    overfit_flag?: boolean;
+  };
+}
+
+export interface InterceptedRawPrediction {
+  raw_crop: string;
+  raw_crop_confidence: number;
+  raw_disease: string;
+  raw_disease_confidence: number;
+  free_energy: number;
+  explanation: string;
+}
+
+export interface TreatmentInfo {
+  crop?: string;
+  disease?: string;
+  pathogen_type?: string;
+  organic?: string;
+  chemical?: string;
+  safety_notes?: string;
+  sources?: SourceRef[];
+  treatment?: string[];
+  prevention?: string[];
+  severity?: Severity;
+}
+
+export interface OODOverfitResult {
+  type: "OOD_OVERFIT_INTERCEPTED";
+  message: string;
   crop: string;
   disease: string;
-  pathogen_type: string;
-  pathogen: string | null;
-  symptoms: string[];
-  treatment: string[];
-  prevention: string[];
-  severity: Severity;
+  is_in_domain: false;
+  confidence: number;
+  intercepted_raw_prediction: InterceptedRawPrediction;
+  treatment: TreatmentInfo;
+  agent_audit_trail: AgentAuditStep[];
+}
+
+export interface DirectVerifiedResult {
+  type: "DIRECT_VERIFIED";
+  crop: string;
+  category: string;
+  disease: string;
+  confidence: number;
+  calibrated_confidence: number;
+  is_in_domain: true;
+  treatment: TreatmentInfo;
+  agent_audit_trail: AgentAuditStep[];
 }
 
 export interface DirectResult {
@@ -26,7 +74,7 @@ export interface DirectResult {
   category: string;
   disease: string;
   confidence: number;
-  treatment: Treatment;
+  treatment: TreatmentInfo;
   rag_used: false;
 }
 
@@ -35,7 +83,7 @@ export interface RagEnhancedResult {
   crop: string;
   category: string;
   model_confidence: number;
-  treatment: Treatment;
+  treatment: TreatmentInfo;
   rag_reasoning: string;
   rag_sources: SourceRef[];
   rag_latency_seconds: number;
@@ -47,7 +95,7 @@ export interface RagPendingResult {
   crop: string;
   category: string;
   model_confidence: number;
-  treatment: Treatment;
+  treatment: TreatmentInfo;
   message: string;
   rag_used: false;
 }
@@ -75,6 +123,8 @@ export interface AiFallbackResult {
 }
 
 export type PredictResponse =
+  | OODOverfitResult
+  | DirectVerifiedResult
   | DirectResult
   | RagEnhancedResult
   | RagPendingResult
@@ -84,5 +134,6 @@ export type PredictResponse =
 export interface HealthResponse {
   status: string;
   models_loaded: boolean;
+  orchestrator_ready?: boolean;
   disease_crops_available: string[];
 }

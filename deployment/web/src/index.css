@@ -1,60 +1,69 @@
 :root {
   color-scheme: light;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 body {
   margin: 0;
-  background: #f2f2f2;
+  background: #f0f4f1;
   color: #1a1a1a;
 }
 
 .container {
-  max-width: 480px;
+  max-width: 560px;
   margin: 0 auto;
   padding: 24px 16px 48px;
 }
 
 h1 {
-  font-size: 24px;
+  font-size: 26px;
+  font-weight: 700;
   text-align: center;
   margin-bottom: 4px;
+  color: #1b4d24;
 }
 
 .subtitle {
   text-align: center;
-  color: #555;
+  color: #556b5c;
   margin-top: 0;
   margin-bottom: 20px;
+  font-size: 14px;
 }
 
 .upload-button {
   display: block;
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   font-size: 16px;
+  font-weight: 600;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   background: #2e7d32;
   color: #fff;
   cursor: pointer;
+  box-shadow: 0 2px 6px rgba(46, 125, 50, 0.25);
+  transition: all 0.2s ease;
 }
 
 .upload-button:hover {
-  background: #276029;
+  background: #256b29;
+  transform: translateY(-1px);
 }
 
 .preview {
   width: 100%;
-  height: 240px;
+  height: 260px;
   object-fit: cover;
   border-radius: 12px;
   margin-top: 16px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
 }
 
 .status {
   text-align: center;
   margin-top: 16px;
+  font-weight: 500;
 }
 
 .status.error {
@@ -62,21 +71,28 @@ h1 {
 }
 
 .card {
-  margin-top: 16px;
-  padding: 16px;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e8e2;
 }
 
 .card h2 {
-  margin-top: 0;
-  font-size: 20px;
+  margin-top: 6px;
+  font-size: 22px;
+  color: #1c3822;
+  font-weight: 700;
 }
 
 .card h3 {
   font-size: 14px;
-  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #4a6350;
+  margin-top: 16px;
+  margin-bottom: 6px;
 }
 
 .card ul {
@@ -84,9 +100,17 @@ h1 {
   padding-left: 20px;
 }
 
+.card li {
+  margin-bottom: 4px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #2b3a2e;
+}
+
 .card p {
   font-size: 14px;
-  color: #333;
+  line-height: 1.5;
+  color: #2b3a2e;
 }
 
 .row {
@@ -94,31 +118,161 @@ h1 {
   justify-content: space-between;
   font-size: 14px;
   margin-bottom: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f4f0;
 }
 
 .label {
-  color: #555;
+  color: #556b5c;
+  font-weight: 500;
 }
 
 .confidence {
-  font-weight: 600;
+  font-weight: 700;
+  color: #1b4d24;
 }
 
 .section {
-  margin-top: 8px;
+  margin-top: 14px;
 }
 
 .badge {
   display: inline-block;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: #8a5300;
-  background: #fff3d6;
-  padding: 3px 8px;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
   border-radius: 999px;
   margin-bottom: 8px;
+}
+
+.badge-overfit {
+  color: #8a3800;
+  background: #ffecd6;
+  border: 1px solid #ffd09e;
+}
+
+.badge-verified {
+  color: #145a27;
+  background: #dcf2e3;
+  border: 1px solid #bce4c8;
+}
+
+.warning-callout {
+  background: #fff8f0;
+  border-left: 4px solid #e67e22;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 14px 0;
+}
+
+.warning-callout h4 {
+  margin: 0 0 4px;
+  color: #a04000;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.warning-callout p {
+  margin: 0;
+  font-size: 13px;
+  color: #5d3510;
+  line-height: 1.4;
+}
+
+.comparison-box {
+  background: #f7faf8;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 12px 0;
+  border: 1px dashed #cedbd0;
+}
+
+.comparison-box .grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.comparison-box .col-raw {
+  color: #8c2d19;
+  font-size: 13px;
+}
+
+.comparison-box .col-corrected {
+  color: #1c6b32;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Multi-Agent Audit Trail */
+.audit-trail {
+  margin-top: 18px;
+  background: #fafcfb;
+  border: 1px solid #e2ede5;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.audit-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #2b5435;
+  margin-bottom: 10px;
+}
+
+.audit-step {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid #e8f0ea;
+  font-size: 12px;
+}
+
+.audit-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.audit-agent-name {
+  font-weight: 700;
+  color: #1e3d25;
+}
+
+.audit-status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.status-passed, .status-verified, .status-endorsed, .status-in_domain, .status-grounded {
+  background: #e1f5e8;
+  color: #13602d;
+}
+
+.status-overruled, .status-out_of_distribution, .status-suspect_overfit {
+  background: #ffeedb;
+  color: #9c4500;
+}
+
+.status-rejected, .status-incompatible {
+  background: #ffebeb;
+  color: #a81c1c;
+}
+
+.audit-verdict-text {
+  color: #4b6151;
+  line-height: 1.35;
 }
 
 .severity {
@@ -159,6 +313,7 @@ h1 {
 .card a {
   color: #2e7d32;
   text-decoration: none;
+  font-weight: 600;
 }
 
 .card a:hover {

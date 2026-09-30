@@ -36,13 +36,14 @@ def get_available_crops(manifest_path):
     return crops
 
 
-def train_crop_model(cfg, device, epochs, batch_size, num_workers, lr, use_amp):
+def train_crop_model(cfg, device, epochs, batch_size, num_workers, lr, use_amp, resume=False):
     cc = cfg["crop_classifier"]
     print("\n" + "=" * 60)
-    print("STAGE 1: TRAINING CROP CLASSIFIER (ViT)")
+    print("STAGE 1: TRAINING CROP CLASSIFIER (ViT / EfficientNet)")
     print("=" * 60)
 
-    train_tf, eval_tf = build_transforms(cfg["img_size"])
+    strong_aug = cfg.get("strong_aug", True)
+    train_tf, eval_tf = build_transforms(cfg["img_size"], strong_aug=strong_aug)
     train_ds = ManifestDataset(cc["manifest"], "train", "crop", transform=train_tf)
     val_ds = ManifestDataset(cc["manifest"], "val", "crop", transform=eval_tf, class_to_idx=train_ds.class_to_idx)
 
@@ -64,31 +65,44 @@ def train_crop_model(cfg, device, epochs, batch_size, num_workers, lr, use_amp):
     ordered_classes = sorted(train_ds.class_to_idx, key=train_ds.class_to_idx.get)
     weight_tensor = torch.tensor([weights_dict[c] for c in ordered_classes], dtype=torch.float32).to(device)
 
-    model = timm.create_model(cc["model_name"], pretrained=True, num_classes=len(ordered_classes)).to(device)
-    criterion = nn.CrossEntropyLoss(weight=weight_tensor)
+    drop_rate = cfg.get("drop_rate", 0.2)
+    drop_path_rate = cfg.get("drop_path_rate", 0.15)
+    model = timm.create_model(
+        cc["model_name"], pretrained=True, num_classes=len(ordered_classes),
+        drop_rate=drop_rate, drop_path_rate=drop_path_rate
+    ).to(device)
+
+    label_smoothing = cfg.get("label_smoothing", 0.1)
+    criterion = nn.CrossEntropyLoss(weight=weight_tensor, label_smoothing=label_smoothing)
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=cfg.get("weight_decay", 0.05))
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
 
+    early_stopping_metric = cfg.get("early_stopping_metric", "val_loss")
+    freeze_epochs = cfg.get("freeze_epochs", 2)
     print(f"Model: {cc['model_name']} | Classes: {ordered_classes}")
+    print(f"Regularization: Label Smoothing={label_smoothing}, DropRate={drop_rate}, DropPath={drop_path_rate}, FreezeEpochs={freeze_epochs}")
     print(f"Train samples: {len(train_ds)} | Val samples: {len(val_ds)} | Batch: {batch_size}")
 
-    best_acc = fit(
+    best_score = fit(
         model, train_loader, val_loader, criterion, optimizer, scheduler, device,
-        epochs, cfg.get("early_stopping_patience", 5), cc["output_dir"], train_ds.class_to_idx, use_amp=use_amp
+        epochs, cfg.get("early_stopping_patience", 5), cc["output_dir"], train_ds.class_to_idx,
+        use_amp=use_amp, early_stopping_metric=early_stopping_metric, freeze_epochs=freeze_epochs,
+        resume=resume
     )
 
     del model, optimizer, scheduler, train_loader, val_loader, train_ds, val_ds
     clear_gpu_memory()
-    return best_acc
+    return best_score
 
 
-def train_disease_model(crop, cfg, device, epochs, batch_size, num_workers, lr, use_amp):
+def train_disease_model(crop, cfg, device, epochs, batch_size, num_workers, lr, use_amp, resume=False):
     dc = cfg["disease_classifier"]
     print("\n" + "=" * 60)
     print(f"STAGE 2: TRAINING DISEASE CLASSIFIER FOR '{crop}' (EfficientNet)")
     print("=" * 60)
 
-    train_tf, eval_tf = build_transforms(cfg["img_size"])
+    strong_aug = cfg.get("strong_aug", True)
+    train_tf, eval_tf = build_transforms(cfg["img_size"], strong_aug=strong_aug)
     train_ds = ManifestDataset(dc["manifest"], "train", "category", crop=crop, transform=train_tf)
     val_ds = ManifestDataset(dc["manifest"], "val", "category", crop=crop, transform=eval_tf,
                               class_to_idx=train_ds.class_to_idx)
@@ -112,23 +126,37 @@ def train_disease_model(crop, cfg, device, epochs, batch_size, num_workers, lr, 
     ordered_classes = sorted(train_ds.class_to_idx, key=train_ds.class_to_idx.get)
     weight_tensor = torch.tensor([weights_dict[c] for c in ordered_classes], dtype=torch.float32).to(device)
 
-    model = timm.create_model(dc["model_name"], pretrained=True, num_classes=len(ordered_classes)).to(device)
-    criterion = nn.CrossEntropyLoss(weight=weight_tensor)
+    drop_rate = cfg.get("drop_rate", 0.2)
+    drop_path_rate = cfg.get("drop_path_rate", 0.15)
+    model = timm.create_model(
+        dc["model_name"], pretrained=True, num_classes=len(ordered_classes),
+        drop_rate=drop_rate, drop_path_rate=drop_path_rate
+    ).to(device)
+
+    label_smoothing = cfg.get("label_smoothing", 0.1)
+    criterion = nn.CrossEntropyLoss(weight=weight_tensor, label_smoothing=label_smoothing)
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=cfg.get("weight_decay", 0.05))
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=epochs)
 
+    early_stopping_metric = cfg.get("early_stopping_metric", "val_loss")
+    freeze_epochs = cfg.get("freeze_epochs", 2)
     print(f"Model: {dc['model_name']} | Crop: {crop} | Classes ({len(ordered_classes)}): {ordered_classes}")
+    print(f"Regularization: Label Smoothing={label_smoothing}, DropRate={drop_rate}, DropPath={drop_path_rate}, FreezeEpochs={freeze_epochs}")
     print(f"Train samples: {len(train_ds)} | Val samples: {len(val_ds)} | Batch: {batch_size}")
 
     output_dir = os.path.join(dc["output_dir"], crop)
-    best_acc = fit(
+    best_score = fit(
         model, train_loader, val_loader, criterion, optimizer, scheduler, device,
-        epochs, cfg.get("early_stopping_patience", 5), output_dir, train_ds.class_to_idx, use_amp=use_amp
+        epochs, cfg.get("early_stopping_patience", 5), output_dir, train_ds.class_to_idx,
+        use_amp=use_amp, early_stopping_metric=early_stopping_metric, freeze_epochs=freeze_epochs,
+        resume=resume
     )
 
     del model, optimizer, scheduler, train_loader, val_loader, train_ds, val_ds
     clear_gpu_memory()
-    return best_acc
+    return best_score
+
+
 
 
 def main():
@@ -143,6 +171,7 @@ def main():
     parser.add_argument("--skip-crop", action="store_true", help="Skip training crop classifier")
     parser.add_argument("--no-amp", action="store_true", help="Disable mixed precision (AMP)")
     parser.add_argument("--no-tf32", action="store_true", help="Disable TF32 mode")
+    parser.add_argument("--resume", action="store_true", help="Resume from checkpoint_last.pt if present in output directories")
     args = parser.parse_args()
 
     start_total_time = time.time()
@@ -170,7 +199,7 @@ def main():
 
     # 1. Train Crop Classifier
     if not args.skip_crop:
-        best_crop_acc = train_crop_model(cfg, device, epochs, batch_size, num_workers, lr, use_amp)
+        best_crop_acc = train_crop_model(cfg, device, epochs, batch_size, num_workers, lr, use_amp, resume=args.resume)
         results["Crop Classifier"] = {
             "model": cfg["crop_classifier"]["model_name"],
             "best_val_acc": round(best_crop_acc, 4),
@@ -187,7 +216,7 @@ def main():
         if crop not in available_crops:
             print(f"Warning: Crop '{crop}' not found in manifest ({available_crops}). Skipping.")
             continue
-        best_disease_acc = train_disease_model(crop, cfg, device, epochs, batch_size, num_workers, lr, use_amp)
+        best_disease_acc = train_disease_model(crop, cfg, device, epochs, batch_size, num_workers, lr, use_amp, resume=args.resume)
         results[f"Disease Classifier ({crop})"] = {
             "model": cfg["disease_classifier"]["model_name"],
             "best_val_acc": round(best_disease_acc, 4),
